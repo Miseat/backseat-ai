@@ -22,23 +22,38 @@ const SKILL_DIR = ['goutoujunshi', 'backseat-ai']
 const SKILL_FILE = path.join(SKILL_DIR, 'SKILL.md');
 const REFS_DIR = path.join(SKILL_DIR, 'references');
 
-/* ---------------- 回答详细程度档位 ---------------- */
+/* ---------------- 回答详细程度档位（中英双语） ---------------- */
 const DETAIL_LEVELS = {
-  1: { name: '极简', maxTokens: 500, desc:
-    '用最短的话给出结论：先一句话点明最关键的建议，再给一个现在就能做的小动作。整体控制在 100 字以内，不展开分析、不给多方案。' },
-  2: { name: '简要', maxTokens: 900, desc:
-    '简要回答：一句话结论 + 2~4 条要点（事实/建议/行动各一到两条）。整体控制在 250 字以内，不铺陈情绪分析。' },
-  3: { name: '均衡', maxTokens: 1500, desc:
-    '均衡回答（默认）：按核心工作流走完整框架——先接住情绪（2~4 句）、再拆事实与推测、给一个首选建议和 2~4 个理由、最后收束为一个可执行的小动作。整体 400~700 字。' },
-  4: { name: '详细', maxTokens: 2400, desc:
-    '详细回答：完整框架 + 更充分的分析。情绪、事实、推测、未知信息分开列；首选建议之外再给 1~2 个备选方案（稳健/会撩/强势），每个方案说明代价与适用场景；行动收束给出观察窗口与回来反馈的信号。整体 800~1300 字。' },
-  5: { name: '复杂', maxTokens: 3600, desc:
-    '复杂深度回答：多角度深度剖析。除完整框架外，加入：长期利益权衡（互惠/安全/机会成本/时间精力）、可引用的知识依据、分阶段执行计划（近/中/远期）、风险与边界提示、多条可复制的话术示例（如涉及回复）。整体 1500 字以上，分节组织，有清晰小标题。' },
+  zh: {
+    1: { name: '极简', maxTokens: 500, desc:
+      '用最短的话给出结论：先一句话点明最关键的建议，再给一个现在就能做的小动作。整体控制在 100 字以内，不展开分析、不给多方案。' },
+    2: { name: '简要', maxTokens: 900, desc:
+      '简要回答：一句话结论 + 2~4 条要点（事实/建议/行动各一到两条）。整体控制在 250 字以内，不铺陈情绪分析。' },
+    3: { name: '均衡', maxTokens: 1500, desc:
+      '均衡回答（默认）：按核心工作流走完整框架——先接住情绪（2~4 句）、再拆事实与推测、给一个首选建议和 2~4 个理由、最后收束为一个可执行的小动作。整体 400~700 字。' },
+    4: { name: '详细', maxTokens: 2400, desc:
+      '详细回答：完整框架 + 更充分的分析。情绪、事实、推测、未知信息分开列；首选建议之外再给 1~2 个备选方案（稳健/会撩/强势），每个方案说明代价与适用场景；行动收束给出观察窗口与回来反馈的信号。整体 800~1300 字。' },
+    5: { name: '复杂', maxTokens: 3600, desc:
+      '复杂深度回答：多角度深度剖析。除完整框架外，加入：长期利益权衡（互惠/安全/机会成本/时间精力）、可引用的知识依据、分阶段执行计划（近/中/远期）、风险与边界提示、多条可复制的话术示例（如涉及回复）。整体 1500 字以上，分节组织，有清晰小标题。' },
+  },
+  en: {
+    1: { name: 'Minimal', maxTokens: 500, desc:
+      'Give the shortest answer: one sentence with the key recommendation, then one small action to take right now. Keep it under ~100 words; no analysis, no multiple options.' },
+    2: { name: 'Brief', maxTokens: 900, desc:
+      'Answer briefly: one-sentence conclusion + 2\u20134 bullet points (facts / advice / actions, one or two each). Keep it under ~250 words; skip long emotional analysis.' },
+    3: { name: 'Balanced', maxTokens: 1500, desc:
+      'Balanced answer (default): follow the full framework \u2014 meet the emotions first (2\u20134 sentences), separate facts from assumptions, give one top recommendation with 2\u20134 reasons, and close with one concrete next step. Around 400\u2013700 words.' },
+    4: { name: 'Detailed', maxTokens: 2400, desc:
+      'Detailed answer: full framework with richer analysis. List emotions, facts, assumptions and unknowns separately; give 1\u20132 alternative options (steady / flirty / assertive) with trade-offs and when to use each; close with an observation window and signals to report back. Around 800\u20131300 words.' },
+    5: { name: 'Complex', maxTokens: 3600, desc:
+      'Complex deep-dive: multi-angle analysis. On top of the full framework, include: long-term trade-offs (reciprocity / safety / opportunity cost / time & energy), knowledge references, a phased plan (near / mid / far), risk and boundary notes, and several copy-ready example lines (if replying). 1500+ words, organized in clear sections with headings.' },
+  },
 };
 
-function detailSpec(level) {
+function detailSpec(level, lang) {
   const n = Number(level);
-  return DETAIL_LEVELS[n] || DETAIL_LEVELS[3];
+  const L = lang === 'en' ? 'en' : 'zh';
+  return DETAIL_LEVELS[L][n] || DETAIL_LEVELS[L][3];
 }
 
 /* ---------------- 文档读取（带缓存） ---------------- */
@@ -159,37 +174,63 @@ function retrieveDocs(query, maxDocs = 2) {
 
 /* ---------------- 系统提示词 ---------------- */
 function buildSystemPrompt(opts) {
-  const { docs, memoryText, stylePrompt, detailLevel, memoryEnabled } = opts;
-  const head = '你是「狗头军师」，一个站在用户一边的恋爱与情感军师。\n'
-    + '先接住情绪，再分清事实，最后给能执行的选择；保持温暖、清醒、站在用户一边。\n';
+  const { docs, memoryText, stylePrompt, detailLevel, memoryEnabled, language } = opts;
+  const isEn = language === 'en';
+
+  const head = isEn
+    ? 'You are the "Dog-Head Military Advisor", a relationship & love advisor who is always on the user\u2019s side.\nMeet the emotions first, then separate facts from assumptions, then give actionable choices; stay warm, clear-headed, and on the user\u2019s side.\n'
+    : '你是「狗头军师」，一个站在用户一边的恋爱与情感军师。\n先接住情绪，再分清事实，最后给能执行的选择；保持温暖、清醒、站在用户一边。\n';
 
   const ref = docs.length
-    ? `\n\n## 本次相关的知识参考（结合参考给出建议，不要逐字复述原文）\n\n${docs.join('\n\n---\n\n')}\n`
+    ? (isEn
+      ? `\n\n## Relevant knowledge references for this question (use them to inform your advice, do NOT quote them verbatim)\n\n${docs.join('\n\n---\n\n')}\n`
+      : `\n\n## 本次相关的知识参考（结合参考给出建议，不要逐字复述原文）\n\n${docs.join('\n\n---\n\n')}\n`)
     : '';
 
-  const detail = detailSpec(detailLevel);
-  const detailSec = `\n\n## 回答详细程度（当前档位：${detail.name}）\n${detail.desc}\n严格按照档位要求的篇幅与结构回答，不要超出太多也不要过于简略。\n`;
+  const detail = detailSpec(detailLevel, language);
+  const detailSec = isEn
+    ? `\n\n## Answer detail level (current: ${detail.name})\n${detail.desc}\nFollow the required length and structure strictly \u2014 not too long, not too brief.\n`
+    : `\n\n## 回答详细程度（当前档位：${detail.name}）\n${detail.desc}\n严格按照档位要求的篇幅与结构回答，不要超出太多也不要过于简略。\n`;
+
+  const langSec = isEn
+    ? `\n\n## Reply language\nPlease reply entirely in English.\n`
+    : `\n\n## 回复语言\n请始终使用简体中文回复用户。\n`;
 
   const styleSec = (stylePrompt && String(stylePrompt).trim())
-    ? `\n\n## 回复风格要求（用户自定义，务必遵守）\n${String(stylePrompt).trim()}\n`
+    ? (isEn
+      ? `\n\n## Reply style requirement (user-defined, must follow)\n${String(stylePrompt).trim()}\n`
+      : `\n\n## 回复风格要求（用户自定义，务必遵守）\n${String(stylePrompt).trim()}\n`)
     : '';
 
   /* 长期记忆：启用时始终注入（含记忆维护规则），让模型知道如何写入记忆 */
   let memSec = '';
   if (memoryEnabled) {
-    const current = memoryText
-      ? `以下是已保存的长期记忆，回答时自然引用，不要逐条复述；除非用户本轮明确提供了新信息，不要编造记忆之外的事实。\n\n${memoryText}\n`
-      : '当前还没有保存任何长期记忆。\n';
-    memSec = `\n\n## 长期记忆（已启用，保存在用户浏览器本地，跨对话生效）\n${current}\n`
-      + `### 记忆维护规则\n当本轮对话出现【值得长期记住】的新信息时，在你的回答的【最末尾】追加一行【记忆】，不要放在正文中间：\n`
-      + `- 用户明确要求记住的内容（例如用户说"记住…"、"请把这些计入到记忆中"、"记一下…"）→ 必须写入；\n`
-      + `- 用户/对象的关键身份信息（称呼、MBTI、主观评分）、关系阶段、重要事件、用户的偏好/边界/目标。\n`
-      + `格式：【记忆】scope|内容\n`
-      + `scope 取：user=用户 / object=对象 / relationship=关系 / event=事件 / hypothesis=推测 / note=备注。\n`
-      + `内容用第三人称一句话陈述、不超过 200 字；同一件事不要重复写；没有新信息就什么也不要追加。\n`;
+    if (isEn) {
+      const current = memoryText
+        ? `Here is the long-term memory saved so far. Reference it naturally in your answer; do NOT recite it line by line; unless the user explicitly provides new information this turn, do not invent facts beyond the memory.\n\n${memoryText}\n`
+        : 'No long-term memory has been saved yet.\n';
+      memSec = `\n\n## Long-term memory (enabled, stored in the user's browser, works across conversations)\n${current}\n`
+        + `### Memory maintenance rules\nWhen this turn contains new information WORTH remembering long-term, append ONE line 【记忆】 at the very END of your reply (not in the middle):\n`
+        + `- Content the user explicitly asks you to remember (e.g. "remember this...", "save this to memory") \u2192 you MUST save it;\n`
+        + `- Key identity info about the user / the other person (name, MBTI, subjective score), relationship stage, important events, the user's preferences / boundaries / goals.\n`
+        + `Format: 【记忆】scope|content\n`
+        + `scope: user / object / relationship / event / hypothesis / note.\n`
+        + `Content: one third-person sentence, no more than 200 characters; do not repeat the same thing; if there is nothing new, append nothing.\n`;
+    } else {
+      const current = memoryText
+        ? `以下是已保存的长期记忆，回答时自然引用，不要逐条复述；除非用户本轮明确提供了新信息，不要编造记忆之外的事实。\n\n${memoryText}\n`
+        : '当前还没有保存任何长期记忆。\n';
+      memSec = `\n\n## 长期记忆（已启用，保存在用户浏览器本地，跨对话生效）\n${current}\n`
+        + `### 记忆维护规则\n当本轮对话出现【值得长期记住】的新信息时，在你的回答的【最末尾】追加一行【记忆】，不要放在正文中间：\n`
+        + `- 用户明确要求记住的内容（例如用户说"记住…"、"请把这些计入到记忆中"、"记一下…"）→ 必须写入；\n`
+        + `- 用户/对象的关键身份信息（称呼、MBTI、主观评分）、关系阶段、重要事件、用户的偏好/边界/目标。\n`
+        + `格式：【记忆】scope|内容\n`
+        + `scope 取：user=用户 / object=对象 / relationship=关系 / event=事件 / hypothesis=推测 / note=备注。\n`
+        + `内容用第三人称一句话陈述、不超过 200 字；同一件事不要重复写；没有新信息就什么也不要追加。\n`;
+    }
   }
 
-  return head + skillCore + ref + detailSec + styleSec + memSec;
+  return head + skillCore + ref + detailSec + langSec + styleSec + memSec;
 }
 
 /* ---------------- 长期记忆 ---------------- */
@@ -243,8 +284,13 @@ function mergeMemory(memory, entries, uid) {
   return { added, addedInfo };
 }
 
-/* ---------------- 示范回复（未配置 API Key） ---------------- */
-function mockReply() {
+/* ---------------- 示范回复（未配置 API Key，中英双语） ---------------- */
+function mockReply(language) {
+  if (language === 'en') {
+    return 'Let me meet your emotions first 🍃 It already matters a lot that you\u2019re willing to say this out loud.\n\n'
+      + '(This is demo mode: no AI endpoint is configured yet, so this is a canned reply. Open \u2699\ufe0f Settings \u2192 API Configuration, paste your API Key, and the Dog-Head Military Advisor will analyze your situation with the full knowledge base: meet the emotions, separate facts from guesses, and give you one small action you can take right now.)\n\n'
+      + 'For now, tell me what hurts most: what happened, how you feel, and what next step you\u2019d most like to solve. I\u2019ll pick it up from here once I\u2019m online.';
+  }
   return '先接住你的情绪 🍃 愿意把这件事说出来，本身就很重要。\n\n'
     + '（当前是示范模式：还没配置 AI 接口，所以这是预设回复。点 ⚙️ 设置 → API 配置，填上 API Key 后，狗头军师就会用完整知识库认真陪你分析：先接住情绪、再拆事实和猜测、最后给一个现在就能做的小动作。）\n\n'
     + '现在你可以先把最难受的点讲给我听：发生了什么、你现在的感受、最想解决的下一步是什么。等我上线后，会从这里接着陪你。';
@@ -312,21 +358,22 @@ function friendlyError(e) {
 }
 
 /* ---------------- 对外主入口 ---------------- */
-/* cfg: { apiBase, apiKey, model, stylePrompt, detailLevel, memoryEnabled }
+/* cfg: { apiBase, apiKey, model, stylePrompt, detailLevel, memoryEnabled, language }
  * history: [{role:'user'|'assistant', content}] 该会话的历史消息（由前端传入）
  * memory: [] 长期记忆条目数组（由前端传入，本函数会就地合并去重）
  * uid: 生成 id 的函数
  */
 async function answer(cfg, history, newText, memory, uid) {
+  const lang = (cfg && cfg.language === 'en') ? 'en' : 'zh';
   const msgs = (Array.isArray(history) ? history : [])
     .filter((m) => m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string')
     .map((m) => ({ role: m.role, content: m.content }))
     .concat({ role: 'user', content: newText });
 
-  const detail = detailSpec(cfg.detailLevel);
+  const detail = detailSpec(cfg.detailLevel, lang);
 
   if (!cfg || !cfg.apiKey) {
-    return { content: mockReply(), mock: true, memoryUpdated: [], memory: memory || [] };
+    return { content: mockReply(lang), mock: true, memoryUpdated: [], memory: memory || [] };
   }
 
   try {
@@ -340,6 +387,7 @@ async function answer(cfg, history, newText, memory, uid) {
       stylePrompt: cfg.stylePrompt,
       detailLevel: cfg.detailLevel,
       memoryEnabled: !!cfg.memoryEnabled,
+      language: lang,
     });
     let content = await callLLM(cfg, systemPrompt, msgs, detail.maxTokens);
 

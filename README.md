@@ -92,6 +92,22 @@ backseat-ai/
 - 同一台电脑换浏览器（Chrome → Edge）、换账号、或清除浏览器数据，就是"新用户"，看到的是空的
 - 想彻底清空：浏览器设置里清除该站点的数据即可（或点对话旁边的 🗑、设置里的「清空记忆」）
 
+## 🌍 部署到网站
+
+这是一个**纯 Node.js 应用**（自带前端与 API），可以部署到任意支持 Node.js 的托管平台（如 Render、Koyeb、Glitch 等）：
+
+1. 把代码推到 GitHub
+2. 在托管平台新建 Web Service，关联该仓库
+3. **启动命令填 `node server.js`**（本应用零依赖，无需安装/构建步骤）
+4. 平台会自动分配端口（应用读取 `PORT` 环境变量，默认 3800）
+
+部署后访问平台给你的网址即可使用，前端与 `/api/chat` 在同一域名下自动联通。
+
+**注意事项：**
+
+- 每个访问者的对话/设置/记忆仍然只存在**各自的浏览器 localStorage** 里，互不可见，部署平台不保存任何用户数据
+- 免费托管一般会在一段时间无访问后休眠，再次访问会慢几秒（冷启动），属正常现象
+
 ## ⚠️ 说明
 
 狗头军师提供的是关系教育与决策支持，不替代心理治疗、医疗诊断或紧急服务。紧急情况请寻求专业帮助。
@@ -183,6 +199,22 @@ The server **stores nothing** — it is a stateless proxy:
 - Each visitor only sees the conversations stored in their own browser — **users cannot see each other's data**; it is local-only
 - On the same machine, switching browsers (Chrome → Edge), switching OS accounts, or clearing browser data makes you a "new user" with an empty list
 - To wipe everything: clear this site's data in browser settings (or delete conversations with 🗑, or clear memory in Settings)
+
+## 🌍 Deploy to the Web
+
+This is a **pure Node.js app** (frontend and API bundled together), so it can be deployed to any Node.js hosting platform (Render, Koyeb, Glitch, etc.):
+
+1. Push the code to GitHub
+2. Create a Web Service on the hosting platform and link the repo
+3. Set the **start command to `node server.js`** (zero dependencies — no install or build step needed)
+4. The platform assigns a port automatically (the app reads the `PORT` env var, default 3800)
+
+After deployment, visit the URL the platform gives you — the frontend and `/api/chat` connect automatically on the same domain.
+
+**Notes:**
+
+- Every visitor's conversations / settings / memory still live only in **their own browser localStorage** — nobody sees each other's data, and the hosting platform stores no user data
+- Free hosting usually sleeps after a period of inactivity; the first visit after that takes a few seconds longer (cold start), which is normal
 
 ## ⚠️ Disclaimer
 
