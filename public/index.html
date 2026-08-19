@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🐶 狗头军师</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐶</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="app">
+  <!-- ============ 左侧导航 ============ -->
+  <aside id="sidebar">
+    <div class="side-logo">
+      <span class="logo-emoji">🐶</span>
+      <div class="logo-text">
+        <b data-i18n="appName">狗头军师</b>
+        <span data-i18n="appTagline">感情咨询 · 先接住情绪，再想办法</span>
+      </div>
+    </div>
+
+    <button id="newChatBtn" class="new-chat">＋ <span data-i18n="newChat">新对话</span></button>
+
+    <div class="side-label" data-i18n="historyLabel">历史对话</div>
+    <div id="convList" class="conv-list"></div>
+
+    <div class="side-foot">
+      <button id="settingsTabBtn" class="nav-tab" data-i18n-title="settings">
+        <span class="tab-ico">⚙️</span><span class="tab-txt" data-i18n="settings">设置</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ============ 主区 ============ -->
+  <main id="main">
+
+    <!-- 聊天视图 -->
+    <section id="view-chat" class="view active">
+      <div class="chat-wrap">
+        <header id="chatHead" class="chat-head">
+          <div class="chat-title-group">
+            <span id="chatTitle" class="chat-title" data-i18n-title="renameTitle">新对话</span>
+            <button id="renameBtn" class="icon-btn" data-i18n-title="rename" title="重命名">✏️</button>
+          </div>
+          <div class="chat-actions">
+            <button id="exportBtn" class="ghost-btn" data-i18n-title="exportTitle" title="导出当前对话为 Markdown">⬇️ <span data-i18n="export">导出</span></button>
+            <button id="deleteConvBtn" class="ghost-btn danger" data-i18n-title="deleteConv" title="删除当前对话">🗑️</button>
+          </div>
+        </header>
+
+        <div id="chatMsgs" class="chat-msgs">
+          <div class="welcome" id="welcomeBox"></div>
+        </div>
+
+        <div class="chat-input-area">
+          <div id="inputHint" class="input-hint hidden"></div>
+          <textarea id="chatInput" rows="1" maxlength="2000" data-i18n-placeholder="chatPlaceholder" placeholder="说说你的心事…（Enter 发送，Shift+Enter 换行）"></textarea>
+          <div class="input-row">
+            <span class="input-tip" data-i18n="inputTip">AI 建议仅供参考 · 紧急情况请寻求专业帮助</span>
+            <div class="send-group">
+              <button id="stopBtn" class="stop-btn hidden" data-i18n-title="stopTitle" title="停止生成">⏹ <span data-i18n="stop">停止</span></button>
+              <button id="sendBtn" class="send-btn" data-i18n="send">发送</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 设置视图 -->
+    <section id="view-settings" class="view">
+      <div class="settings-wrap">
+        <!-- 语言切换（默认中文） -->
+        <div class="lang-bar">
+          <span class="lang-label">🌐 <span data-i18n="languageLabel">语言 / Language</span></span>
+          <div class="lang-switch">
+            <button class="lang-btn active" data-lang="zh">中文</button>
+            <button class="lang-btn" data-lang="en">English</button>
+          </div>
+        </div>
+
+        <div class="settings-top">
+          <button id="settingsBackBtn" class="ghost-btn" data-i18n="backToChat">← 返回对话</button>
+        </div>
+        <h1 class="settings-title" data-i18n="settingsTitle">⚙️ 设置</h1>
+
+        <!-- API 配置 -->
+        <div class="card">
+          <h2 data-i18n="apiConfig">🔌 API 配置</h2>
+          <div class="preset-row">
+            <button class="preset" data-preset="openai">OpenAI</button>
+            <button class="preset" data-preset="deepseek">DeepSeek</button>
+            <button class="preset" data-preset="kimi">Kimi</button>
+            <button class="preset" data-preset="qwen" data-i18n="qwenName">通义</button>
+            <button class="preset" data-preset="zhipu" data-i18n="zhipuName">智谱GLM</button>
+            <button class="preset" data-preset="groq">Groq</button>
+            <button class="preset" data-preset="ollama" data-i18n="ollamaName">Ollama(本地)</button>
+            <button class="preset" data-preset="custom" data-i18n="customName">✍️ 自定义</button>
+          </div>
+          <p class="tip" data-i18n-html="presetTip">预设 = 一键填入常用地址和模型，<b>之后仍可自由修改</b>；不想用预设就直接手填，或点「✍️ 自定义」。</p>
+          <label for="setApiBase" data-i18n="apiBaseLabel">API 地址</label>
+          <input id="setApiBase" placeholder="https://api.deepseek.com/v1" list="baseList">
+          <datalist id="baseList">
+            <option value="https://api.openai.com/v1"></option>
+            <option value="https://api.deepseek.com/v1"></option>
+            <option value="https://api.moonshot.cn/v1"></option>
+            <option value="https://dashscope.aliyuncs.com/compatible-mode/v1"></option>
+            <option value="https://open.bigmodel.cn/api/paas/v4"></option>
+            <option value="https://api.groq.com/openai/v1"></option>
+            <option value="http://localhost:11434/v1"></option>
+          </datalist>
+          <p class="tip" data-i18n="apiBaseTip">填服务商文档里的接口地址（OpenAI 兼容格式，通常以 /v1 结尾）。预设已含各家正确地址，也可整体替换。</p>
+          <label for="setApiKey" data-i18n="apiKeyLabel">API Key（只保存在本机）</label>
+          <input id="setApiKey" type="password" placeholder="sk-..." autocomplete="off">
+          <label for="setModel" data-i18n="modelLabel">模型名称</label>
+          <input id="setModel" placeholder="deepseek-chat" list="modelList">
+          <datalist id="modelList">
+            <option value="gpt-4o-mini"></option>
+            <option value="gpt-4o"></option>
+            <option value="deepseek-chat"></option>
+            <option value="deepseek-reasoner"></option>
+            <option value="moonshot-v1-8k"></option>
+            <option value="moonshot-v1-32k"></option>
+            <option value="qwen-plus"></option>
+            <option value="qwen-turbo"></option>
+            <option value="qwen-max"></option>
+            <option value="glm-4-flash"></option>
+            <option value="glm-4-plus"></option>
+            <option value="llama-3.3-70b-versatile"></option>
+            <option value="qwen2.5:7b"></option>
+          </datalist>
+          <p class="tip" data-i18n-html="modelTip">点预设会自动填该家的推荐模型，这里可<b>任意改成该平台支持的其他模型</b>（下拉可参考常用模型名）。</p>
+          <div class="row-between">
+            <button id="apiTestBtn" class="ghost-btn" data-i18n="testConnection">🧪 测试连接</button>
+            <span id="apiTestResult" class="test-result"></span>
+          </div>
+        </div>
+
+        <!-- 回复设置 -->
+        <div class="card">
+          <h2 data-i18n="replySettings">💬 回复设置</h2>
+          <label for="detailSlider" data-i18n="detailLevel">回答详细程度</label>
+          <div class="slider-row">
+            <input id="detailSlider" type="range" min="1" max="5" step="1" value="3">
+            <span id="detailLabel" class="detail-label">均衡</span>
+          </div>
+          <div class="slider-scale">
+            <span data-i18n="detailMin">极简</span><span data-i18n="detailBrief">简要</span><span data-i18n="detailBalanced">均衡</span><span data-i18n="detailDetailed">详细</span><span data-i18n="detailComplex">复杂</span>
+          </div>
+          <p id="detailDesc" class="tip"></p>
+
+          <label for="setStyle" data-i18n="stylePrompt">自定义回复风格提示词</label>
+          <textarea id="setStyle" rows="4" maxlength="4000" data-i18n-placeholder="stylePlaceholder" placeholder="例如：多用比喻和共情，语气温柔；每次结尾给出 3 个具体行动选项；不用太学术，像朋友聊天…"></textarea>
+          <p class="tip" data-i18n="styleTip">这段文字会作为「回复风格要求」注入给狗头军师</p>
+        </div>
+
+        <!-- 长期记忆 -->
+        <div class="card">
+          <h2 data-i18n="memory">🧠 长期记忆</h2>
+          <div class="row-between">
+            <span class="mem-desc" data-i18n="memoryDesc">跨对话记住你和对象的关键信息（MBTI、关系阶段、重要事件…）</span>
+            <label class="switch">
+              <input id="memSwitch" type="checkbox">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <label for="memText" data-i18n="memoryContentLabel">记忆内容（每行一条，可手动编辑）</label>
+          <textarea id="memText" rows="8" data-i18n-placeholder="memoryPlaceholder" placeholder="[用户] 用户是 INTJ，主观评分 75&#10;[对象] 对象代号小A，用户评分 88&#10;[关系] 双方认识 3 个月，正在暧昧期&#10;[事件] 上周五一起看了电影，氛围不错&#10;[推测] 用户猜测对象是回避型依恋（置信度中）"></textarea>
+          <div class="row-between">
+            <button id="memClearBtn" class="ghost-btn danger" data-i18n="clearMemory">🗑️ 清空记忆</button>
+            <span id="memCount" class="tip"></span>
+          </div>
+        </div>
+
+        <!-- 导出 -->
+        <div class="card">
+          <h2 data-i18n="exportConversation">📤 导出对话</h2>
+          <p class="tip" data-i18n="exportTip">把当前对话导出为 Markdown 文件（xxx.md）保存到本地。</p>
+          <button id="exportBtn2" class="primary-btn" data-i18n="exportCurrent">⬇️ 导出当前对话为 .md</button>
+        </div>
+
+        <div class="settings-foot">
+          <button id="settingsSaveBtn" class="primary-btn big" data-i18n="saveSettings">💾 保存设置</button>
+          <button id="settingsResetBtn" class="ghost-btn" data-i18n="resetDefaults">恢复默认</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div id="toast"></div>
+<script src="app.js"></script>
+</body>
+</html>
