@@ -1,0 +1,10 @@
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# Node（本为零依赖，仅作防护）
+node_modules/
+
+# CloudBase 云函数部署目录（用控制台上传，不进仓库；如需 Git 自动部署可去掉）
+cloudbase/
+

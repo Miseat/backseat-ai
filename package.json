@@ -1,0 +1,12 @@
+{
+  "name": "backseat-ai",
+  "version": "1.0.0",
+  "description": "🐶 狗头军师独立版（backseat-ai）：感情咨询对话 Agent（多会话 + 记忆 + 自定义风格 + 5 档详细程度），新人练手项目，零依赖 Node 服务器",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=14"
+  }
+}
