@@ -194,10 +194,13 @@
 
 <div id="toast"></div>
 <!--
-  部署到 CloudBase 等平台、且云函数与静态托管不在同一域名时，
-  取消注释并把地址换成你的云函数访问地址：
-  <script>window.API_BASE = 'https://xxx.service.tcloudbase.com';</script>
+  CloudBase 云函数地址（部署后生效；本地 localhost 自动走本地服务，不受影响）
 -->
+<script>
+  if (!location.hostname.match(/localhost|127\.0\.0\.1/)) {
+    window.API_BASE = 'https://doghead-d2g5xajn9e4864dd0-1471675809.ap-shanghai.app.tcloudbase.com';
+  }
+</script>
 <script src="app.js"></script>
 </body>
 </html>
