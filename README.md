@@ -1,4 +1,4 @@
-# 🐶 狗头军师 · 独立版 / Dog-Head Military Advisor · Standalone
+# 🐶 狗头军师 / Dog-Head Military Advisor
 
 > 💡 **本项目是新人开发者练手的项目**，使用了来源于网络的 **goutoujunshi（狗头军师）Skill**（GitHub：https://github.com/powerycy/goutoujunshi ），在此对其作者表示感谢。项目结构、代码与文档都保持了简单直白的风格，适合学习 Node.js 原生后端、前端交互与本地存储的入门实践。
 >
@@ -10,7 +10,7 @@
 
 ## 简介
 
-专门用来咨询感情问题的小小对话 Agent。从生日许愿池项目中把「狗头军师」单独提取出来，做成一个**类似 DeepSeek Harness 网页版**的独立界面：
+一个专注感情与恋爱咨询的 AI 对话助手（Dog-Head Military Advisor）。内置完整的狗头军师知识库——40+ 份关系心理学、沟通话术与安全边界文档，先接住你的情绪，再分清事实与猜测，最后给出可执行的选择。界面为现代侧边栏聊天风格：
 
 - 左上角 **＋ 新对话**：随时开一个新会话
 - 左侧导航：浏览/切换/删除所有历史对话记录
@@ -50,7 +50,7 @@ backseat-ai/
 ├── server.js          # 零依赖后端（Node 原生 http）：静态页面 + 聊天代理 + 连接测试
 ├── mentor.js          # 🐶 狗头军师引擎：知识检索 + 记忆提取 + 详细程度 + 风格
 ├── goutoujunshi/      # 狗头军师 Skill 知识库（goutoujunshi，来源网络，完整保留）
-├── public/            # 前端界面（纯静态，DSH 风格）
+├── public/            # 前端界面（纯静态，现代聊天界面）
 │   ├── index.html
 │   ├── style.css
 │   └── app.js
@@ -102,7 +102,7 @@ backseat-ai/
 
 ## Introduction
 
-A small chat agent dedicated to relationship advice. It extracts the "Dog-Head Military Advisor" from the birthday-wish-pool project and turns it into a standalone UI similar to the **DeepSeek Harness web version**:
+An AI chat assistant focused on relationship and love advice (Dog-Head Military Advisor). It ships with the full goutoujunshi knowledge base — 40+ documents on relationship psychology, communication scripts, and safety boundaries — that meets your emotions first, separates facts from assumptions, and gives actionable next steps. The UI follows a modern sidebar chat style:
 
 - **＋ New Chat** (top-left): start a new conversation anytime
 - **Left sidebar**: browse / switch / delete all past conversations
@@ -142,7 +142,7 @@ backseat-ai/
 ├── server.js          # Zero-dependency backend (native Node http): static files + chat proxy + connection test
 ├── mentor.js          # 🐶 Advisor engine: knowledge retrieval + memory extraction + detail level + style
 ├── goutoujunshi/      # goutoujunshi Skill knowledge base (from the internet, fully kept)
-├── public/            # Frontend (pure static, DSH-style)
+├── public/            # Frontend (pure static, modern chat UI)
 │   ├── index.html
 │   ├── style.css
 │   └── app.js
