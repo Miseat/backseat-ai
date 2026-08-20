@@ -1060,6 +1060,30 @@ $('#settingsTabBtn').addEventListener('click', () => {
 /* 设置视图顶部的返回按钮 */
 $('#settingsBackBtn').addEventListener('click', () => switchTab('chat'));
 
+/* ---------------- 移动端侧边栏收放 ---------------- */
+const sidebar = $('#sidebar');
+const sidebarToggle = $('#sidebarToggle');
+const sidebarBackdrop = $('#sidebarBackdrop');
+
+function setSidebar(open) {
+  sidebar.classList.toggle('open', open);
+  sidebarToggle.textContent = open ? '«' : '»';
+  sidebarBackdrop.classList.toggle('show', open);
+}
+
+sidebarToggle.addEventListener('click', () => {
+  setSidebar(!sidebar.classList.contains('open'));
+});
+sidebarBackdrop.addEventListener('click', () => setSidebar(false));
+
+/* 移动端：点击新对话/会话/设置后自动收起抽屉 */
+document.addEventListener('click', (e) => {
+  if (window.innerWidth > 720) return;
+  if (e.target.closest('#newChatBtn') || e.target.closest('.conv-item') || e.target.closest('#settingsTabBtn')) {
+    setSidebar(false);
+  }
+});
+
 /* 语言切换 */
 document.querySelectorAll('.lang-btn').forEach((btn) => {
   btn.addEventListener('click', () => {

@@ -38,6 +38,7 @@ input, textarea { font-family: inherit; }
 #app {
   display: flex;
   height: 100vh;
+  height: 100dvh; /* 动态视口：避免移动端浏览器地址栏遮挡 */
 }
 
 /* ================= 左侧导航 ================= */
@@ -721,10 +722,43 @@ textarea { resize: vertical; line-height: 1.7; }
 .test-result.ok { color: var(--green); }
 .test-result.err { color: var(--red); }
 
+/* 侧边栏收放按钮 + 遮罩（桌面端隐藏，移动端显示） */
+.sidebar-toggle {
+  display: none;
+  position: fixed;
+  left: 8px;
+  top: 8px;
+  z-index: 210;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--bg-3);
+  border: 1px solid var(--border-2);
+  color: var(--text-2);
+  font-size: 19px;
+  line-height: 1;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+  transition: left 0.25s ease, transform 0.25s ease;
+}
+.sidebar-toggle:hover { color: var(--text); border-color: var(--accent); }
+.sidebar-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 190;
+}
+.sidebar-backdrop.show { display: block; }
+
+/* 底部安全区（iPhone 底部横条 / 浏览器工具栏遮挡防护） */
+.chat-input-area { padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
+.settings-wrap { padding-bottom: calc(30px + env(safe-area-inset-bottom)); }
+.side-foot { padding-bottom: calc(8px + env(safe-area-inset-bottom)); }
+
 /* ================= Toast ================= */
 #toast {
   position: fixed;
-  bottom: 28px;
+  bottom: calc(28px + env(safe-area-inset-bottom));
   left: 50%;
   transform: translateX(-50%) translateY(20px);
   background: var(--bg-3);
@@ -742,13 +776,28 @@ textarea { resize: vertical; line-height: 1.7; }
 }
 #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-/* ================= 小屏适配 ================= */
+/* ================= 小屏适配（移动端：抽屉式侧边栏） ================= */
 @media (max-width: 720px) {
-  #sidebar { width: 72px; min-width: 72px; }
-  .logo-text, .side-label, .tab-txt, .new-chat { display: none; }
-  .new-chat { padding: 10px; font-size: 16px; }
+  #sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 264px;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    z-index: 200;
+    box-shadow: 6px 0 24px rgba(0,0,0,0.4);
+  }
+  #sidebar.open { transform: translateX(0); }
+
+  .sidebar-toggle { display: block; }
+  #sidebar.open ~ .sidebar-toggle {
+    left: 264px;
+    transform: translateX(-100%);
+  }
+
   .conv-item .conv-preview, .conv-item .conv-meta { display: none; }
-  .conv-item .conv-title { padding-right: 0; }
   .bubble { max-width: 92%; }
   .chat-wrap { padding: 0 10px; }
 }
