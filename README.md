@@ -1,9 +1,5 @@
 # 🐶 狗头军师 / Dog-Head Military Advisor
 
-> 💡 **本项目是新人开发者练手的项目**，使用了来源于网络的 **goutoujunshi（狗头军师）Skill**（GitHub：https://github.com/powerycy/goutoujunshi ），在此对其作者表示感谢。项目结构、代码与文档都保持了简单直白的风格，适合学习 Node.js 原生后端、前端交互与本地存储的入门实践。
->
-> 💡 **This project is a practice project for newbie developers.** It uses the **goutoujunshi (Dog-Head Military Advisor) Skill** found on the internet (GitHub: https://github.com/powerycy/goutoujunshi ) — thanks to its author. The codebase, structure and docs are intentionally kept simple and straightforward, making it a good starting point for learning a native Node.js backend, frontend interaction, and local storage.
-
 ---
 
 # 中文版 / Chinese
