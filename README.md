@@ -45,7 +45,7 @@ node server.js
 backseat-ai/
 ├── server.js          # 零依赖后端（Node 原生 http）：静态页面 + 聊天代理 + 连接测试
 ├── mentor.js          # 🐶 狗头军师引擎：知识检索 + 记忆提取 + 详细程度 + 风格
-├── goutoujunshi/      # 狗头军师 Skill 知识库（goutoujunshi，来源网络，完整保留）
+├── goutoujunshi/      # 狗头军师 Skill 知识库（完整保留）
 ├── public/            # 前端界面（纯静态，现代聊天界面）
 │   ├── index.html
 │   ├── style.css
@@ -153,7 +153,7 @@ Then open **http://localhost:3800** in your browser.
 backseat-ai/
 ├── server.js          # Zero-dependency backend (native Node http): static files + chat proxy + connection test
 ├── mentor.js          # 🐶 Advisor engine: knowledge retrieval + memory extraction + detail level + style
-├── goutoujunshi/      # goutoujunshi Skill knowledge base (from the internet, fully kept)
+├── goutoujunshi/      # goutoujunshi Skill knowledge base (fully kept)
 ├── public/            # Frontend (pure static, modern chat UI)
 │   ├── index.html
 │   ├── style.css
